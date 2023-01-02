@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package student;
+
+option go_package = "go_test/student";
+
+message Student {
+    int32 stu_id = 1;
+    string name = 2;
+    int32 age = 3;
+}
+
+message GetStudentRequest {
+    int32 stu_id = 1;
+}
+message StudentWithTeacher {
+    Student student = 1;
+    string teacher = 2;
+}
+message GetStudentResponse {
+    int32 status = 1;
+    string msg = 2;
+    StudentWithTeacher data = 3;
+}
+
+message CreateStudentResponse {
+    int32 status = 1;
+    string msg = 2;
+    Student data = 3;
+}

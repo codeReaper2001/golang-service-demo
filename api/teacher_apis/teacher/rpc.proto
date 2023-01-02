@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package teacher;
+option go_package = "go_test/teacher";
+
+import "teacher/teacher.proto";
+import "google/api/annotations.proto";
+
+service TeacherSvc {
+    rpc GetTeacher(GetTeacherRequest) returns (GetTeacherResponse) {
+        option (google.api.http) = {
+            get: "/teacher"
+        };
+    }
+}

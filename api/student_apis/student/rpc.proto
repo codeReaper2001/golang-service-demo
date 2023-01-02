@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package student;
+option go_package = "go_test/student";
+
+import "student/student.proto";
+import "google/api/annotations.proto";
+
+service StudentSvc {
+    rpc GetStudent(GetStudentRequest) returns (GetStudentResponse) {
+        option (google.api.http) = {
+            get: "/student"
+        };
+    }
+    rpc CreateStudent(Student) returns (CreateStudentResponse) {
+        option (google.api.http) = {
+            post: "/student"
+            body: "*"
+        };
+    }
+}

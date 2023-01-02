@@ -1,0 +1,4 @@
+version: v1
+directories:
+  - student_apis
+  - teacher_apis

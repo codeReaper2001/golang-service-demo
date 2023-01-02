@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package teacher;
+
+option go_package = "go_test/teacher";
+
+message Student {
+    int32 stu_id = 1;
+    string name = 2;
+    int32 age = 3;
+}
+
+message Teacher {
+    int32 teacher_id = 1;
+    string name = 2;
+}
+
+message GetTeacherRequest {
+    int32 teacher_id = 1;
+}
+message TeacherWithStudents {
+    int32 teacher_id = 1;
+    string name = 2;
+    repeated Student students = 3;
+}
+message GetTeacherResponse {
+    int32 status = 1;
+    string msg = 2;
+    TeacherWithStudents data = 3;
+}
+
+message CreateStudentResponse {
+    int32 status = 1;
+    string msg = 2;
+    Student data = 3;
+}

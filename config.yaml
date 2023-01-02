@@ -1,0 +1,9 @@
+server:
+  grpc_gateway: "10000"
+  grpc_server: "10001"
+mysql:
+  username: "root"
+  password: "123456"
+  host: "192.168.0.100"
+  port: "3340"
+  db_name: "dev"
