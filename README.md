@@ -18,42 +18,42 @@ go generate ./path_to_ent/ent
 package main
 
 import (
-	"context"
-	"fmt"
-	"go_test/internal/config"
-	"go_test/pkg/ent"
-	"log"
+    "context"
+    "fmt"
+    "go_test/internal/config"
+    "go_test/pkg/ent"
+    "log"
 
-	_ "github.com/go-sql-driver/mysql"
+    _ "github.com/go-sql-driver/mysql"
 )
 
 var mysqlConfig = config.MysqlConfig{
-	Username: "root",
-	Password: "123456",
-	Host:     "192.168.0.100",
-	Port:     "3340",
-	DBName:   "dev",
+    Username: "root",
+    Password: "123456",
+    Host:     "192.168.0.100",
+    Port:     "3340",
+    DBName:   "dev",
 }
 
 func main() {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-		mysqlConfig.Username,
-		mysqlConfig.Password,
-		mysqlConfig.Host,
-		mysqlConfig.Port,
-		mysqlConfig.DBName,
-	)
-	client, err := ent.Open("mysql", dsn)
-	if err != nil {
-		log.Fatalf("failed opening connection to mysql: %v", err)
-	}
-	defer client.Close()
+    dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+        mysqlConfig.Username,
+        mysqlConfig.Password,
+        mysqlConfig.Host,
+        mysqlConfig.Port,
+        mysqlConfig.DBName,
+    )
+    client, err := ent.Open("mysql", dsn)
+    if err != nil {
+        log.Fatalf("failed opening connection to mysql: %v", err)
+    }
+    defer client.Close()
 
-	// Run the auto migration tool.
-	if err := client.Schema.Create(context.Background()); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
-	}
-	log.Println("Successfully Migrated!")
+    // Run the auto migration tool.
+    if err := client.Schema.Create(context.Background()); err != nil {
+        log.Fatalf("failed creating schema resources: %v", err)
+    }
+    log.Println("Successfully Migrated!")
 }
 ```
 
@@ -242,27 +242,27 @@ api/student
 package student
 
 import (
-	"context"
+    "context"
 
-	student_pb "go_test/api/student"
+    student_pb "go_test/api/student"
 )
 
 type service struct {
 }
 
 func New() *service {
-	return &service{}
+    return &service{}
 }
 
 func (s *service) GetStudent(
-	ctx context.Context,
-	req *student_pb.GetStudentRequest,
+    ctx context.Context,
+    req *student_pb.GetStudentRequest,
 ) (*student_pb.GetStudentResponse, error) {
-	return &student_pb.GetStudentResponse{
-		Status: 0,
-		Msg:    "OK",
-		Data:   &student_pb.Student{},
-	}, nil
+    return &student_pb.GetStudentResponse{
+        Status: 0,
+        Msg:    "OK",
+        Data:   &student_pb.Student{},
+    }, nil
 }
 ```
 
@@ -274,67 +274,67 @@ func (s *service) GetStudent(
 package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"log"
-	"net"
-	"net/http"
-	"os"
+    "context"
+    "flag"
+    "fmt"
+    "log"
+    "net"
+    "net/http"
+    "os"
 
-	"github.com/golang/glog"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/spf13/viper"
-	"google.golang.org/grpc"
+    "github.com/golang/glog"
+    "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+    "github.com/spf13/viper"
+    "google.golang.org/grpc"
 
-	student_pb "go_test/api/student"
-	student_svc "go_test/internal/service/student"
+    student_pb "go_test/api/student"
+    student_svc "go_test/internal/service/student"
 
-	_ "github.com/go-sql-driver/mysql"
+    _ "github.com/go-sql-driver/mysql"
 )
 
 type endPointFunction func(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error)
 
 var endPointFunctions = []endPointFunction{
-	student_pb.RegisterStudentSvcHandlerFromEndpoint,
+    student_pb.RegisterStudentSvcHandlerFromEndpoint,
 }
 
 func run(conf *config.Config) error {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	// grpc服务
-	grpcServer := grpc.NewServer()
-	grpcServerAddr := "localhost:10001"
-	lis, err := net.Listen("tcp", grpcServerAddr)
-	if err != nil {
-		logger.Fatalf("bind err: %v", err)
-	}
-	student_pb.RegisterStudentSvcServer(grpcServer, student_svc.New(logger, entClient))
-	teacher_pb.RegisterTeacherSvcServer(grpcServer, teacher_svc.New(logger, entClient))
-	// grpc启动
-	go grpcServer.Serve(lis)
-	logger.Infoln("grpcServer started")
-	// Register gRPC server endpoint
-	// Note: Make sure the gRPC server is running properly and accessible
+    ctx := context.Background()
+    ctx, cancel := context.WithCancel(ctx)
+    defer cancel()
+    // grpc服务
+    grpcServer := grpc.NewServer()
+    grpcServerAddr := "localhost:10001"
+    lis, err := net.Listen("tcp", grpcServerAddr)
+    if err != nil {
+        logger.Fatalf("bind err: %v", err)
+    }
+    student_pb.RegisterStudentSvcServer(grpcServer, student_svc.New(logger, entClient))
+    teacher_pb.RegisterTeacherSvcServer(grpcServer, teacher_svc.New(logger, entClient))
+    // grpc启动
+    go grpcServer.Serve(lis)
+    logger.Infoln("grpcServer started")
+    // Register gRPC server endpoint
+    // Note: Make sure the gRPC server is running properly and accessible
     // 配置grpc-gateway对各服务的转发规则
-	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	for _, endPointFunc := range endPointFunctions {
-		endPointFunc(ctx, mux, grpcServerAddr, opts)
-	}
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
+    mux := runtime.NewServeMux()
+    opts := []grpc.DialOption{grpc.WithInsecure()}
+    for _, endPointFunc := range endPointFunctions {
+        endPointFunc(ctx, mux, grpcServerAddr, opts)
+    }
+    // Start HTTP server (and proxy calls to gRPC server endpoint)
     // 启动grpc-gateway服务
-	return http.ListenAndServe(fmt.Sprintf(":10000", mux)
+    return http.ListenAndServe(fmt.Sprintf(":10000", mux)
 }
 
 func main() {
-	flag.Parse()
-	defer glog.Flush()
+    flag.Parse()
+    defer glog.Flush()
 
-	if err := run(conf); err != nil {
-		glog.Fatal(err)
-	}
+    if err := run(conf); err != nil {
+        glog.Fatal(err)
+    }
 }
 
 ```
@@ -347,19 +347,19 @@ func main() {
 
 ```go
 func loadConfigFile(filePath string) *config.Config {
-	viper.SetConfigType("yaml")
-	viper.SetConfigFile(filePath)
+    viper.SetConfigType("yaml")
+    viper.SetConfigFile(filePath)
 
-	// 读取配置文件
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatalf("read config err: %v\n", err)
-	}
-	logger.Infoln("read config ok")
-	conf := &config.Config{}
-	viper.Unmarshal(conf)
-	logger.Infoln(conf)
-	return conf
+    // 读取配置文件
+    err := viper.ReadInConfig()
+    if err != nil {
+        log.Fatalf("read config err: %v\n", err)
+    }
+    logger.Infoln("read config ok")
+    conf := &config.Config{}
+    viper.Unmarshal(conf)
+    logger.Infoln(conf)
+    return conf
 }
 ```
 
@@ -378,14 +378,14 @@ mysql:
 
 ```go
 type Config struct {
-	MySQL MysqlConfig `mapstructure:"mysql"`
+    MySQL MysqlConfig `mapstructure:"mysql"`
 }
 type MysqlConfig struct {
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	Host     string `mapstructure:"host"`
-	Port     string `mapstructure:"port"`
-	DBName   string `mapstructure:"db_name"`
+    Username string `mapstructure:"username"`
+    Password string `mapstructure:"password"`
+    Host     string `mapstructure:"host"`
+    Port     string `mapstructure:"port"`
+    DBName   string `mapstructure:"db_name"`
 }
 ```
 
@@ -399,12 +399,12 @@ type MysqlConfig struct {
 var logger *logrus.Logger
 
 func init() {
-	logger = logrus.New()
-	logger.SetFormatter(&logrus.TextFormatter{
-		ForceQuote:      true,                  //键值对加引号
-		TimestampFormat: "2006-01-02 15:04:05", //时间格式
-		FullTimestamp:   true,
-	})
+    logger = logrus.New()
+    logger.SetFormatter(&logrus.TextFormatter{
+        ForceQuote:      true,                  //键值对加引号
+        TimestampFormat: "2006-01-02 15:04:05", //时间格式
+        FullTimestamp:   true,
+    })
 }
 ```
 
