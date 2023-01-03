@@ -11,7 +11,6 @@ import (
 )
 
 type service struct {
-	student_pb.UnimplementedStudentSvcServer
 	logger *logrus.Logger
 	DB     *ent.Client
 }
