@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package student;
 
-option go_package = "go_test/student";
+option go_package = "go_test/api/student";
 
 message Student {
     int32 stu_id = 1;
