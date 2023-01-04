@@ -1,3 +1,11 @@
+# 项目运行
+
+```
+go run internal/cmd/manager/main.go ./config.yaml
+```
+
+# 相关配置
+
 ## ent相关
 
 ### 生成原始ent文件
