@@ -8,17 +8,29 @@ import (
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
-var mysqlConfig = config.MysqlConfig{
-	Username: "root",
-	Password: "123456",
-	Host:     "192.168.0.100",
-	Port:     "3340",
-	DBName:   "dev",
+func loadConfigFile(filePath string) *config.Config {
+	viper.SetConfigType("yaml")
+	viper.SetConfigFile(filePath)
+
+	// 读取配置文件
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("read config err: %v\n", err)
+	}
+	logrus.Infoln("read config ok")
+	conf := &config.Config{}
+	viper.Unmarshal(conf)
+	logrus.Infoln(conf)
+	return conf
 }
 
 func main() {
+	config := loadConfigFile("./config.yaml")
+	mysqlConfig := config.MySQL
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		mysqlConfig.Username,
 		mysqlConfig.Password,
