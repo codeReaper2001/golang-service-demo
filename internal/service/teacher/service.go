@@ -23,6 +23,8 @@ func New(logger *logrus.Logger, db *ent.Client) *service {
 	}
 }
 
+var _ teacher_pb.TeacherSvcServer = (*service)(nil)
+
 func (s *service) GetTeacher(
 	ctx context.Context,
 	req *teacher_pb.GetTeacherRequest,

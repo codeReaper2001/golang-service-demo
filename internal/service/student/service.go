@@ -15,6 +15,8 @@ type service struct {
 	DB     *ent.Client
 }
 
+var _ student_pb.StudentSvcServer = (*service)(nil)
+
 func New(logger *logrus.Logger, db *ent.Client) *service {
 	return &service{
 		logger: logger,
